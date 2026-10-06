@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Monster Chiller Tracker</title>
+    <title>Monster Freeze Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -42,21 +42,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            margin-bottom: 10px;
+            padding: 0;
+            height: 200px;
+            margin-top: 32px;
+            margin-bottom: 32px;
         }
 
         .can-container {
             position: relative;
-            width: 100px;
-            height: 240px;
-            border-radius: 6px 6px 12px 12px;
+            width: 88px;
+            height: 200px;
+            border-radius: 6px 6px 14px 14px;
             background: linear-gradient(90deg, #b0b0b5 0%, #f5f5f7 25%, #d1d1d6 50%, #f5f5f7 75%, #b0b0b5 100%);
             box-shadow: 
                 inset -8px 0 16px rgba(0,0,0,0.1), 
                 inset 8px 0 16px rgba(255,255,255,0.7), 
                 0 20px 30px -10px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease;
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .can-mask {
@@ -65,27 +67,35 @@
             border-radius: inherit;
             overflow: hidden;
             z-index: 1;
+            /* Prevent pixel bleeding on rounded bottom corners */
+            mask-image: -webkit-radial-gradient(white, black);
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
 
         .liquid-container {
             position: absolute;
             bottom: 0;
             left: 0;
+            right: 0;
             width: 100%;
             height: 5%;
             transition: height 0.1s linear;
             z-index: 1;
+            overflow: visible;
         }
 
         .liquid-body {
             position: absolute;
-            inset: 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background-color: var(--monster-green);
         }
 
         .wave-surface {
             position: absolute;
-            top: -12px;
+            top: -10px;
             left: 0;
             width: 200%;
             height: 12px;
@@ -124,23 +134,24 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 4px;
+            gap: 3px;
             align-items: center;
             justify-content: center;
             z-index: 3;
             opacity: 0.85;
+            pointer-events: none;
         }
 
         .claw {
-            width: 4px;
+            width: 3.5px;
             background: var(--monster-green);
             border-radius: 2px;
             transform: skewX(-15deg);
             box-shadow: 0 0 8px rgba(52, 199, 89, 0.4);
         }
-        .claw:nth-child(1) { height: 40px; margin-top: -10px;}
-        .claw:nth-child(2) { height: 55px; }
-        .claw:nth-child(3) { height: 40px; margin-top: 10px;}
+        .claw:nth-child(1) { height: 32px; margin-top: -8px;}
+        .claw:nth-child(2) { height: 44px; }
+        .claw:nth-child(3) { height: 32px; margin-top: 8px;}
 
         .frost-overlay {
             position: absolute;
@@ -152,6 +163,7 @@
             mix-blend-mode: hard-light;
             transition: opacity 0.5s linear;
             box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+            pointer-events: none;
         }
 
         .frost-overlay::after {
@@ -210,6 +222,34 @@
         }
         .btn-secondary:hover { background-color: #e5e5ea; }
 
+        .format-selector {
+            display: flex;
+            background-color: #e5e5ea;
+            border-radius: 12px;
+            padding: 2px;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .format-btn {
+            flex: 1;
+            padding: 6px 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .format-btn.active {
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
         .hidden { display: none !important; }
 
         input[type=number]::-webkit-inner-spin-button, 
@@ -239,10 +279,17 @@
     <main class="w-full max-w-[400px] p-4 sm:p-6">
         <div class="glass-panel p-8 text-center relative flex flex-col items-center">
             
-            <header class="mb-6 w-full text-center">
+            <header class="mb-4 w-full text-center">
                 <h1 class="text-[22px] font-semibold tracking-tight">Monster Freeze Tracker</h1>
                 <p class="text-[13px] text-[#86868b] mt-1" id="status-text">Pronta per essere raffreddata</p>
             </header>
+
+            <!-- Selettore Formato -->
+            <div class="format-selector" id="format-selector">
+                <button class="format-btn" data-size="250">250 ml</button>
+                <button class="format-btn" data-size="330">330 ml</button>
+                <button class="format-btn active" data-size="500">500 ml</button>
+            </div>
 
             <div class="can-stage w-full">
                 <div class="can-container" id="can">
@@ -262,7 +309,7 @@
                 </div>
             </div>
 
-            <div class="my-4 w-full text-center flex flex-col items-center">
+            <div class="mb-4 w-full text-center flex flex-col items-center">
                 <div class="temp-display flex items-baseline justify-center text-[#1d1d1f]" id="temp-display-container">
                     <span id="temp-integer">29</span>
                     <span class="temp-decimal text-[#86868b]" id="temp-decimal">.00</span>
@@ -271,7 +318,7 @@
                 <div id="time-container" class="mt-4 px-4 py-2 bg-[#f2f2f7] rounded-full flex items-center justify-center gap-2 transition-colors duration-300">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[#86868b] opacity-80">
                         <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
+                        <polyline points="12 6 12 16 14"></polyline>
                     </svg>
                     <span class="text-[14px] font-medium text-[#1d1d1f] time-display" id="time-remaining">
                         --:--
@@ -279,7 +326,7 @@
                 </div>
             </div>
 
-            <div class="w-full flex justify-between items-center px-8 mt-4 text-[13px] font-medium text-[#86868b]">
+            <div class="w-full flex justify-between items-center px-8 mt-2 text-[13px] font-medium text-[#86868b]">
                 <div class="flex flex-col items-center w-24 cursor-pointer" id="container-start-temp" onclick="if(appState.status === 'idle') document.getElementById('input-start-temp').focus()">
                     <span class="mb-1.5 pointer-events-none">Partenza</span>
                     <div class="flex items-center justify-center bg-[#f2f2f7] hover:bg-[#e5e5ea] rounded-xl px-3 py-2 transition-all cursor-text shadow-sm border border-black/5 focus-within:ring-2 focus-within:ring-gray-300 w-full">
@@ -295,7 +342,7 @@
                 </div>
             </div>
 
-            <div class="mt-8 w-full flex flex-col gap-3">
+            <div class="mt-6 w-full flex flex-col gap-3">
                 <button id="btn-start" class="btn btn-primary w-full shadow-sm hover:shadow-md">
                     Raffredda
                 </button>
@@ -330,12 +377,31 @@
     <script>
         const T_ENV = -18.0;
         const T_TARGET = 4.0;
-        const K_SEC = 0.00028; 
         
+        // Exact formulas and canonical sizes for 250ml, 330ml, 500ml
+        const CAN_CONFIGS = {
+            '250': {
+                kSec: 0.000353,
+                width: '75px',
+                height: '160px'
+            },
+            '330': {
+                kSec: 0.000321,
+                width: '80px',
+                height: '180px'
+            },
+            '500': {
+                kSec: 0.000280,
+                width: '88px',
+                height: '200px'
+            }
+        };
+
         const STORAGE_KEY = 'monster_chiller_state';
         let appState = {
             status: 'idle',
             tInit: 29.0,
+            canSize: '500',
             elapsedSeconds: 0,
             lastStartTime: null,
             hasAlerted: false
@@ -361,6 +427,7 @@
         const modalContent = document.getElementById('alert-modal-content');
         const btnDismiss = document.getElementById('btn-dismiss');
         const elLiquidContainer = document.getElementById('liquid-container');
+        const formatSelector = document.getElementById('format-selector');
 
         function formatTime(totalSeconds) {
             if (totalSeconds <= 0) return "00:00";
@@ -419,13 +486,23 @@
             return total;
         }
 
+        function getK() {
+            return CAN_CONFIGS[appState.canSize || '500'].kSec;
+        }
+
         function calculateTemperature(elapsed) {
-            return T_ENV + (appState.tInit - T_ENV) * Math.exp(-K_SEC * elapsed);
+            return T_ENV + (appState.tInit - T_ENV) * Math.exp(-getK() * elapsed);
         }
 
         function getTotalSecondsNeeded(tInit) {
             if (tInit <= T_TARGET) return 0;
-            return -Math.log((T_TARGET - T_ENV) / (tInit - T_ENV)) / K_SEC;
+            return -Math.log((T_TARGET - T_ENV) / (tInit - T_ENV)) / getK();
+        }
+
+        function applyCanDimensions() {
+            const config = CAN_CONFIGS[appState.canSize || '500'];
+            elCan.style.width = config.width;
+            elCan.style.height = config.height;
         }
 
         function updateUI() {
@@ -503,21 +580,40 @@
             btnStart.classList.add('hidden');
             activeActions.classList.add('hidden');
 
-            if (appState.status === 'idle') {
+            const isIdle = appState.status === 'idle';
+            inputStartTemp.disabled = !isIdle;
+
+            const formatButtons = formatSelector.querySelectorAll('.format-btn');
+            formatButtons.forEach(btn => {
+                btn.disabled = !isIdle;
+                btn.style.opacity = isIdle ? '1' : '0.5';
+                btn.style.cursor = isIdle ? 'pointer' : 'not-allowed';
+            });
+
+            if (isIdle) {
                 btnStart.classList.remove('hidden');
                 elCan.classList.remove('is-cooling');
-                inputStartTemp.disabled = false;
             } else if (appState.status === 'cooling') {
                 activeActions.classList.remove('hidden');
                 btnTogglePause.textContent = 'Pausa';
                 elCan.classList.add('is-cooling');
-                inputStartTemp.disabled = true;
             } else if (appState.status === 'paused') {
                 activeActions.classList.remove('hidden');
                 btnTogglePause.textContent = 'Riprendi';
                 elCan.classList.remove('is-cooling');
-                inputStartTemp.disabled = true;
             }
+        }
+
+        function updateFormatUI() {
+            const formatButtons = formatSelector.querySelectorAll('.format-btn');
+            formatButtons.forEach(btn => {
+                if (btn.dataset.size === appState.canSize) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            applyCanDimensions();
         }
 
         function startCooling() {
@@ -555,16 +651,28 @@
             appState = {
                 status: 'idle',
                 tInit: parseFloat(inputStartTemp.value) || 29.0,
+                canSize: appState.canSize || '500',
                 elapsedSeconds: 0,
                 lastStartTime: null,
                 hasAlerted: false
             };
             saveState();
             
+            updateFormatUI();
             updateButtons();
             elFrostOverlay.style.opacity = 0;
             updateUI();
         }
+
+        formatSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.format-btn');
+            if (!btn || appState.status !== 'idle') return;
+
+            appState.canSize = btn.dataset.size;
+            saveState();
+            updateFormatUI();
+            updateUI();
+        });
 
         inputStartTemp.addEventListener('focus', () => {
             if (appState.status !== 'idle') return;
@@ -631,8 +739,11 @@
                         return;
                     }
                     appState = parsed;
+                    if (!appState.canSize || !CAN_CONFIGS[appState.canSize]) appState.canSize = '500';
+                    
                     inputStartTemp.value = appState.tInit;
                     
+                    updateFormatUI();
                     updateButtons();
                     updateUI();
                     
@@ -644,6 +755,7 @@
                 }
             } else {
                 inputStartTemp.value = appState.tInit;
+                updateFormatUI();
                 updateUI();
                 updateButtons();
             }
