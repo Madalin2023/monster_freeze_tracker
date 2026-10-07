@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Monster Freeze Tracker</title>
+    <title>Energy Freeze Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -280,8 +280,8 @@
         <div class="glass-panel p-8 text-center relative flex flex-col items-center">
             
             <header class="mb-4 w-full text-center">
-                <h1 class="text-[22px] font-semibold tracking-tight">Monster Freeze Tracker</h1>
-                <p class="text-[13px] text-[#86868b] mt-1" id="status-text">Pronta per essere raffreddata</p>
+                <h1 class="text-[22px] font-semibold tracking-tight">Energy Freeze Tracker</h1>
+                <p class="text-[13px] text-[#86868b] mt-1" id="status-text">Ready to freeze</p>
             </header>
 
             <!-- Selettore Formato -->
@@ -328,14 +328,14 @@
 
             <div class="w-full flex justify-between items-center px-8 mt-2 text-[13px] font-medium text-[#86868b]">
                 <div class="flex flex-col items-center w-24 cursor-pointer" id="container-start-temp" onclick="if(appState.status === 'idle') document.getElementById('input-start-temp').focus()">
-                    <span class="mb-1.5 pointer-events-none">Partenza</span>
+                    <span class="mb-1.5 pointer-events-none">Start temp</span>
                     <div class="flex items-center justify-center bg-[#f2f2f7] hover:bg-[#e5e5ea] rounded-xl px-3 py-2 transition-all cursor-text shadow-sm border border-black/5 focus-within:ring-2 focus-within:ring-gray-300 w-full">
                         <input type="number" id="input-start-temp" value="29" class="bg-transparent text-[#1d1d1f] font-semibold text-[16px] w-[28px] text-center outline-none p-0 m-0">
                         <span class="text-[#1d1d1f] font-semibold text-[16px] pointer-events-none">°C</span>
                     </div>
                 </div>
                 <div class="flex flex-col items-center w-24">
-                    <span class="mb-1.5">Ideale</span>
+                    <span class="mb-1.5">Ideal</span>
                     <div class="flex items-center justify-center px-3 py-2">
                         <span class="text-[#1d1d1f] font-semibold text-[16px]">4°C</span>
                     </div>
@@ -344,11 +344,11 @@
 
             <div class="mt-6 w-full flex flex-col gap-3">
                 <button id="btn-start" class="btn btn-primary w-full shadow-sm hover:shadow-md">
-                    Raffredda
+                    Freeze
                 </button>
                 <div id="active-actions" class="w-full flex gap-3 hidden">
                     <button id="btn-toggle-pause" class="btn btn-secondary flex-1 shadow-sm border border-black/5">
-                        Pausa
+                        Pause
                     </button>
                     <button id="btn-reset" class="btn flex-1 text-white shadow-sm" style="background-color: #ff9f0a;">
                         Reset
@@ -366,10 +366,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h2 class="text-xl font-semibold mb-2 tracking-tight text-[#1d1d1f]">Ghiacciata al punto giusto</h2>
-            <p class="text-[#86868b] text-[15px] mb-6 leading-relaxed">La Monster ha raggiunto i 4°C. È il momento perfetto per godertela.</p>
+            <h2 class="text-xl font-semibold mb-2 tracking-tight text-[#1d1d1f]">Perfectly chilled</h2>
+            <p class="text-[#86868b] text-[15px] mb-6 leading-relaxed">Your Energy drink has reached 4°C. It's time to enjoy it!</p>
             <button id="btn-dismiss" class="btn bg-[#f2f2f7] hover:bg-[#e5e5ea] text-[#1d1d1f] w-full font-semibold">
-                Chiudi
+                Close
             </button>
         </div>
     </div>
@@ -545,7 +545,7 @@
                 if (!appState.hasAlerted && appState.status === 'cooling') {
                     appState.hasAlerted = true;
                     saveState();
-                    elStatusText.textContent = "Pronta da bere!";
+                    elStatusText.textContent = "Ready to drink!";
                     elStatusText.style.color = "var(--monster-green)";
                     playChime();
                     showModal();
@@ -557,13 +557,13 @@
                 elTimeContainer.classList.remove('time-ready-bg');
                 
                 if (appState.status === 'cooling') {
-                    elStatusText.textContent = "Raffreddamento...";
+                    elStatusText.textContent = "Freezing...";
                     elStatusText.style.color = "var(--text-muted)";
                 } else if (appState.status === 'paused') {
-                    elStatusText.textContent = "In pausa";
+                    elStatusText.textContent = "In pause";
                     elStatusText.style.color = "var(--text-muted)";
                 } else {
-                    elStatusText.textContent = "Pronta per essere raffreddata";
+                    elStatusText.textContent = "Ready fo freeze";
                     elStatusText.style.color = "var(--text-muted)";
                 }
             }
@@ -595,11 +595,11 @@
                 elCan.classList.remove('is-cooling');
             } else if (appState.status === 'cooling') {
                 activeActions.classList.remove('hidden');
-                btnTogglePause.textContent = 'Pausa';
+                btnTogglePause.textContent = 'Pause';
                 elCan.classList.add('is-cooling');
             } else if (appState.status === 'paused') {
                 activeActions.classList.remove('hidden');
-                btnTogglePause.textContent = 'Riprendi';
+                btnTogglePause.textContent = 'Resume';
                 elCan.classList.remove('is-cooling');
             }
         }
